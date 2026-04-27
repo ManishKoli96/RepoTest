@@ -1,0 +1,67 @@
+        private static string strDocName = "";
+
+        public static void WriteLog(string ErrorMsg, string strModule)
+        {
+            System.Xml.XmlDocument xmlDoc = new System.Xml.XmlDocument();
+            System.Xml.XmlElement xmlErrorElemnt;
+            System.Xml.XmlElement xmlErrorMsgElemnt;
+            System.Xml.XmlElement xmlModuleElemnt;
+            System.Xml.XmlElement xmlTimeElemnt;
+            try
+            {
+                if (ErrorMsg == "Thread was being aborted.")
+                {
+                    return;
+                }
+                CreateLogFile();
+                xmlDoc.Load(strDocName);
+
+                xmlErrorElemnt = xmlDoc.CreateElement("Error");
+
+                xmlErrorMsgElemnt = xmlDoc.CreateElement("ErrorMsg");
+                xmlErrorMsgElemnt.InnerText = ErrorMsg;
+                xmlErrorElemnt.AppendChild(xmlErrorMsgElemnt);
+
+                xmlModuleElemnt = xmlDoc.CreateElement("Module");
+                xmlModuleElemnt.InnerText = strModule;
+                xmlErrorElemnt.AppendChild(xmlModuleElemnt);
+
+                xmlTimeElemnt = xmlDoc.CreateElement("DateTime");
+                xmlTimeElemnt.InnerText = DateTime.Now.ToString();
+                xmlErrorElemnt.AppendChild(xmlTimeElemnt);
+
+                xmlDoc.DocumentElement.AppendChild(xmlErrorElemnt);
+                xmlDoc.Save(strDocName);
+            }
+
+            catch (Exception ex)
+            {
+
+            }
+        }
+        private static void CreateLogFile()
+        {
+            string strPath = "";
+            string strMonth = System.DateTime.Now.Month.ToString();
+            string strYear = System.DateTime.Now.Year.ToString();
+            string strMsg = "<FineDocs></FineDocs>";
+            try
+            {
+                strDocName = strYear + "_" + strMonth + ".xml";
+                //strPath = System.Net.HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) + "ErrorLog\\";
+                strPath = @"C:\Program Files (x86)\Pyramid\FineDocs Scanning Ver 5.3\Log\";
+                strDocName = strPath + strDocName;
+
+                if (!System.IO.File.Exists(strPath + strYear + "_" + strMonth + ".xml"))
+                {
+                    System.Xml.XmlDocument objXmlDoc = new System.Xml.XmlDocument();
+                    objXmlDoc.LoadXml(strMsg);
+                    objXmlDoc.Save(strDocName);
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+
+        }
+
